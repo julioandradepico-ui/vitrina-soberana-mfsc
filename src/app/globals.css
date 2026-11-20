@@ -1,26 +1,51 @@
 @import "tailwindcss";
-
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-sand: #F6F3EC;
+  --color-cream: #FDFBF7;
+  --color-forest: #143326;
+  --color-forest-mid: #234E3C;
+  --color-moss: #2D5A45;
+  --color-terracotta: #C65D3E;
+  --color-terracotta-dark: #A6462A;
+  --color-gold: #B9833C;
+  --color-bark: #2D2926;
+  --color-muted: #5F5954;
+  --color-line: #E4DED2;
+  --color-night: #0F1D17;
+  --color-night-card: #162820;
+
+  --font-serif: var(--font-fraunces), Georgia, serif;
+  --font-sans: var(--font-jakarta), system-ui, -apple-system, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  --bg: #F6F3EC;
+  --fg: #2D2926;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hide scrollbars cleanly for horizontal pill carousels */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
