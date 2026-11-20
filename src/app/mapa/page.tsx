@@ -36,6 +36,33 @@ function buildHubArcsGeoJson() {
   };
 }
 
+function buildOrgsPointsGeoJson() {
+  return {
+    type: "FeatureCollection" as const,
+    features: ORGANIZATIONS.map((org) => ({
+      type: "Feature" as const,
+      properties: {
+        id: org.id,
+        sigla: org.sigla,
+        municipio: org.municipio,
+        departamento: org.departamento,
+        hubName: org.hubName,
+        seal: org.seal,
+        color:
+          org.seal === "Sello Diferenciado"
+            ? "#D49B4B"
+            : org.seal === "Legalidad Vigente"
+              ? "#2D7A56"
+              : "#D96B48",
+      },
+      geometry: {
+        type: "Point" as const,
+        coordinates: [org.lng, org.lat],
+      },
+    })),
+  };
+}
+
 export default function MapaTerritorialPage() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
@@ -54,48 +81,72 @@ export default function MapaTerritorialPage() {
 
     let map: maplibregl.Map | null = null;
     try {
-      const tiles =
+      const sources: Record<string, maplibregl.RasterSourceSpecification> =
         mapMode === "satellite"
-          ? [
-              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-            ]
-          : [
-              "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-              "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-            ];
+          ? {
+              baseTiles: {
+                type: "raster",
+                tiles: [
+                  "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+                ],
+                tileSize: 256,
+                attribution: "Imagery &copy; Esri, Maxar, Earthstar Geographics",
+              },
+              labelTiles: {
+                type: "raster",
+                tiles: [
+                  "https://a.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png",
+                ],
+                tileSize: 256,
+                attribution: "&copy; OpenStreetMap &copy; CARTO",
+              },
+            }
+          : {
+              baseTiles: {
+                type: "raster",
+                tiles: [
+                  "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
+                  "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
+                ],
+                tileSize: 256,
+                attribution: "&copy; OpenStreetMap &copy; CARTO",
+              },
+            };
+
+      const layers: maplibregl.LayerSpecification[] = [
+        { id: "base-layer", type: "raster", source: "baseTiles" },
+        ...(mapMode === "satellite"
+          ? ([
+              {
+                id: "labels-layer",
+                type: "raster",
+                source: "labelTiles",
+                paint: { "raster-opacity": 0.9 },
+              },
+            ] as maplibregl.LayerSpecification[])
+          : []),
+      ];
 
       map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: {
-          version: 8,
-          sources: {
-            baseTiles: {
-              type: "raster",
-              tiles,
-              tileSize: 256,
-              attribution:
-                mapMode === "satellite"
-                  ? "Imagery &copy; Esri, Maxar, Earthstar Geographics"
-                  : "&copy; OpenStreetMap &copy; CARTO",
-            },
-          },
-          layers: [
-            {
-              id: "base-layer",
-              type: "raster",
-              source: "baseTiles",
-            },
-          ],
-        },
+        style: { version: 8, sources, layers },
         center: [-74.1, 4.6],
         zoom: 5.1,
       });
 
       map.addControl(new maplibregl.NavigationControl(), "top-right");
 
+      const hoverPopup = new maplibregl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 12,
+      });
+
       map.on("load", () => {
         if (!map) return;
         map.resize();
+
+        // 1. Hub connection arcs (exact WebGL geographic space)
         map.addSource("hub-arcs", {
           type: "geojson",
           data: buildHubArcsGeoJson(),
@@ -106,46 +157,83 @@ export default function MapaTerritorialPage() {
           source: "hub-arcs",
           paint: {
             "line-color": mapMode === "satellite" ? "#F4D5B5" : "#C65D3E",
-            "line-width": 2,
-            "line-opacity": 0.72,
+            "line-width": 1.8,
+            "line-opacity": 0.68,
             "line-dasharray": [3, 2],
           },
         });
-      });
 
-      ORGANIZATIONS.forEach((org) => {
-        const el = document.createElement("button");
-        el.type = "button";
-        el.className =
-          "flex h-7 w-7 items-center justify-center rounded-full border-2 border-white shadow-lg transition-transform hover:scale-125 cursor-pointer";
-        el.style.backgroundColor =
-          org.seal === "Sello Diferenciado"
-            ? "#B9833C"
-            : org.seal === "Legalidad Vigente"
-              ? "#1B4332"
-              : "#C65D3E";
-        el.title = `${org.sigla} (${org.municipio}, ${org.departamento})`;
-        el.innerHTML = `<span style="width:8px;height:8px;border-radius:999px;background:#fff;display:block"></span>`;
-
-        el.addEventListener("click", () => {
-          setSelectedOrg(org);
-          map?.flyTo({
-            center: [org.lng, org.lat],
-            zoom: 8.6,
-            duration: 1200,
-            essential: true,
-          });
+        // 2. Native WebGL GeoJSON circles (ZERO CSS transform drift!)
+        map.addSource("orgs-points", {
+          type: "geojson",
+          data: buildOrgsPointsGeoJson(),
         });
 
-        new maplibregl.Marker({ element: el })
-          .setLngLat([org.lng, org.lat])
-          .addTo(map!);
+        map.addLayer({
+          id: "orgs-halo",
+          type: "circle",
+          source: "orgs-points",
+          paint: {
+            "circle-radius": 13,
+            "circle-color": ["get", "color"],
+            "circle-opacity": 0.25,
+          },
+        });
+
+        map.addLayer({
+          id: "orgs-circles",
+          type: "circle",
+          source: "orgs-points",
+          paint: {
+            "circle-radius": 7.5,
+            "circle-color": ["get", "color"],
+            "circle-stroke-width": 2.2,
+            "circle-stroke-color": "#FFFFFF",
+          },
+        });
+
+        map.on("mouseenter", "orgs-circles", (e) => {
+          if (!map || !e.features?.[0]) return;
+          map.getCanvas().style.cursor = "pointer";
+          const props = e.features[0].properties;
+          const geom = e.features[0].geometry as GeoJSON.Point;
+          hoverPopup
+            .setLngLat(geom.coordinates as [number, number])
+            .setHTML(
+              `<div style="font-family:system-ui,sans-serif;color:#143326;padding:2px 4px;">
+                <strong style="font-size:12px;">${props.sigla}</strong><br/>
+                <span style="font-size:11px;color:#5F5954;">${props.municipio}, ${props.departamento}</span>
+              </div>`
+            )
+            .addTo(map);
+        });
+
+        map.on("mouseleave", "orgs-circles", () => {
+          if (!map) return;
+          map.getCanvas().style.cursor = "";
+          hoverPopup.remove();
+        });
+
+        map.on("click", "orgs-circles", (e) => {
+          const id = e.features?.[0]?.properties?.id;
+          const found = ORGANIZATIONS.find((o) => o.id === id);
+          if (found) {
+            setSelectedOrg(found);
+            map?.flyTo({
+              center: [found.lng, found.lat],
+              zoom: 8.6,
+              duration: 1100,
+              essential: true,
+            });
+          }
+        });
       });
 
       mapRef.current = map;
       const t = setTimeout(() => map?.resize(), 350);
       return () => {
         clearTimeout(t);
+        hoverPopup.remove();
         map?.remove();
         mapRef.current = null;
       };
@@ -233,7 +321,7 @@ export default function MapaTerritorialPage() {
             className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20"
           >
             <Layers className="h-3.5 w-3.5 text-amber-200" />
-            {mapMode === "satellite" ? "Vista: Satelital Real" : "Vista: Mapa Limpio"}
+            {mapMode === "satellite" ? "Vista: Satelital + Fronteras" : "Vista: Mapa Limpio"}
           </button>
         </div>
       </div>
@@ -252,13 +340,13 @@ export default function MapaTerritorialPage() {
           <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl border border-white/15 bg-night/90 px-3.5 py-2.5 text-[11px] text-cream backdrop-blur-md">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-gold" /> Sello Diferenciado
+                <span className="h-2.5 w-2.5 rounded-full bg-[#D49B4B]" /> Sello Diferenciado
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-forest border border-white/50" /> Legalidad Vigente
+                <span className="h-2.5 w-2.5 rounded-full bg-[#2D7A56]" /> Legalidad Vigente
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-terracotta" /> Aval Comunitario
+                <span className="h-2.5 w-2.5 rounded-full bg-[#D96B48]" /> Aval Comunitario
               </span>
             </div>
           </div>
