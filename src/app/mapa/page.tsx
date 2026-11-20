@@ -81,6 +81,7 @@ export default function MapaTerritorialPage() {
 
     let map: maplibregl.Map | null = null;
     try {
+      maplibregl.setWorkerUrl(assetUrl("/maplibre-gl-worker.js"));
       const rasterSources: Record<string, maplibregl.SourceSpecification> =
         mapMode === "satellite"
           ? {
@@ -95,21 +96,20 @@ export default function MapaTerritorialPage() {
               labelTiles: {
                 type: "raster",
                 tiles: [
-                  "https://a.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png",
+                  "https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}",
                 ],
                 tileSize: 256,
-                attribution: "&copy; OpenStreetMap &copy; CARTO",
+                attribution: "Boundaries &copy; Esri",
               },
             }
           : {
               baseTiles: {
                 type: "raster",
                 tiles: [
-                  "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-                  "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
+                  "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
                 ],
                 tileSize: 256,
-                attribution: "&copy; OpenStreetMap &copy; CARTO",
+                attribution: "&copy; OpenStreetMap contributors",
               },
             };
 
@@ -333,7 +333,7 @@ export default function MapaTerritorialPage() {
             <div ref={mapContainerRef} className="h-full w-full" />
           )}
 
-          <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl border border-white/15 bg-night/90 px-3.5 py-2.5 text-[11px] text-cream backdrop-blur-md">
+          <div className="pointer-events-none absolute left-4 top-4 rounded-xl border border-white/15 bg-night/90 px-3.5 py-2.5 text-[11px] text-cream backdrop-blur-md">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5">
                 <span className="h-2.5 w-2.5 rounded-full bg-[#E2A647]" /> Sello Diferenciado
