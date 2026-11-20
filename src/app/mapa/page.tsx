@@ -15,17 +15,17 @@ import {
 import { ORGANIZATIONS, Organization, PRODUCTS, REGIONAL_HUBS } from "@/data/mfscData";
 import { assetUrl } from "@/lib/paths";
 
-function buildHubArcsGeoJson() {
+function buildHubArcsGeoJson(): GeoJSON.FeatureCollection {
   const hubById = Object.fromEntries(REGIONAL_HUBS.map((h) => [h.id, h]));
   return {
-    type: "FeatureCollection" as const,
+    type: "FeatureCollection",
     features: ORGANIZATIONS.map((org) => {
       const hub = hubById[org.hubId];
       return {
-        type: "Feature" as const,
+        type: "Feature",
         properties: { hubId: org.hubId, sigla: org.sigla },
         geometry: {
-          type: "LineString" as const,
+          type: "LineString",
           coordinates: [
             [org.lng, org.lat],
             [hub.center[1], hub.center[0]],
@@ -36,11 +36,11 @@ function buildHubArcsGeoJson() {
   };
 }
 
-function buildOrgsPointsGeoJson() {
+function buildOrgsPointsGeoJson(): GeoJSON.FeatureCollection {
   return {
-    type: "FeatureCollection" as const,
+    type: "FeatureCollection",
     features: ORGANIZATIONS.map((org) => ({
-      type: "Feature" as const,
+      type: "Feature",
       properties: {
         id: org.id,
         sigla: org.sigla,
@@ -50,13 +50,13 @@ function buildOrgsPointsGeoJson() {
         seal: org.seal,
         color:
           org.seal === "Sello Diferenciado"
-            ? "#D49B4B"
+            ? "#E2A647"
             : org.seal === "Legalidad Vigente"
-              ? "#2D7A56"
-              : "#D96B48",
+              ? "#2CA56D"
+              : "#E06A43",
       },
       geometry: {
-        type: "Point" as const,
+        type: "Point",
         coordinates: [org.lng, org.lat],
       },
     })),
@@ -81,7 +81,7 @@ export default function MapaTerritorialPage() {
 
     let map: maplibregl.Map | null = null;
     try {
-      const sources: Record<string, maplibregl.RasterSourceSpecification> =
+      const rasterSources: Record<string, maplibregl.SourceSpecification> =
         mapMode === "satellite"
           ? {
               baseTiles: {
@@ -113,23 +113,70 @@ export default function MapaTerritorialPage() {
               },
             };
 
-      const layers: maplibregl.LayerSpecification[] = [
-        { id: "base-layer", type: "raster", source: "baseTiles" },
-        ...(mapMode === "satellite"
-          ? ([
-              {
-                id: "labels-layer",
-                type: "raster",
-                source: "labelTiles",
-                paint: { "raster-opacity": 0.9 },
-              },
-            ] as maplibregl.LayerSpecification[])
-          : []),
-      ];
+      // Declare GeoJSON sources & layers directly inside initial style so all 30 pins render on Frame 1!
+      const style: maplibregl.StyleSpecification = {
+        version: 8,
+        sources: {
+          ...rasterSources,
+          "hub-arcs": {
+            type: "geojson",
+            data: buildHubArcsGeoJson(),
+          },
+          "orgs-points": {
+            type: "geojson",
+            data: buildOrgsPointsGeoJson(),
+          },
+        },
+        layers: [
+          { id: "base-layer", type: "raster", source: "baseTiles" },
+          ...(mapMode === "satellite"
+            ? ([
+                {
+                  id: "labels-layer",
+                  type: "raster",
+                  source: "labelTiles",
+                  paint: { "raster-opacity": 0.92 },
+                },
+              ] as maplibregl.LayerSpecification[])
+            : []),
+          {
+            id: "hub-arcs-layer",
+            type: "line",
+            source: "hub-arcs",
+            paint: {
+              "line-color": mapMode === "satellite" ? "#F7DEC0" : "#C65D3E",
+              "line-width": 2,
+              "line-opacity": 0.78,
+              "line-dasharray": [3, 2],
+            },
+          },
+          {
+            id: "orgs-halo",
+            type: "circle",
+            source: "orgs-points",
+            paint: {
+              "circle-radius": 16,
+              "circle-color": ["get", "color"],
+              "circle-opacity": 0.32,
+            },
+          },
+          {
+            id: "orgs-circles",
+            type: "circle",
+            source: "orgs-points",
+            paint: {
+              "circle-radius": 9,
+              "circle-color": ["get", "color"],
+              "circle-stroke-width": 2.6,
+              "circle-stroke-color": "#FFFFFF",
+            },
+          },
+        ],
+      };
 
       map = new maplibregl.Map({
         container: mapContainerRef.current,
-        style: { version: 8, sources, layers },
+        style,
         center: [-74.1, 4.6],
         zoom: 5.1,
       });
@@ -139,98 +186,47 @@ export default function MapaTerritorialPage() {
       const hoverPopup = new maplibregl.Popup({
         closeButton: false,
         closeOnClick: false,
-        offset: 12,
+        offset: 14,
       });
 
-      map.on("load", () => {
+      map.on("mouseenter", "orgs-circles", (e) => {
+        if (!map || !e.features?.[0]) return;
+        map.getCanvas().style.cursor = "pointer";
+        const props = e.features[0].properties;
+        const geom = e.features[0].geometry as GeoJSON.Point;
+        hoverPopup
+          .setLngLat(geom.coordinates as [number, number])
+          .setHTML(
+            `<div style="font-family:system-ui,sans-serif;color:#143326;padding:3px 6px;">
+              <strong style="font-size:12px;">${props.sigla}</strong><br/>
+              <span style="font-size:11px;color:#5F5954;">${props.municipio}, ${props.departamento}</span>
+            </div>`
+          )
+          .addTo(map);
+      });
+
+      map.on("mouseleave", "orgs-circles", () => {
         if (!map) return;
-        map.resize();
+        map.getCanvas().style.cursor = "";
+        hoverPopup.remove();
+      });
 
-        // 1. Hub connection arcs (exact WebGL geographic space)
-        map.addSource("hub-arcs", {
-          type: "geojson",
-          data: buildHubArcsGeoJson(),
-        });
-        map.addLayer({
-          id: "hub-arcs-layer",
-          type: "line",
-          source: "hub-arcs",
-          paint: {
-            "line-color": mapMode === "satellite" ? "#F4D5B5" : "#C65D3E",
-            "line-width": 1.8,
-            "line-opacity": 0.68,
-            "line-dasharray": [3, 2],
-          },
-        });
-
-        // 2. Native WebGL GeoJSON circles (ZERO CSS transform drift!)
-        map.addSource("orgs-points", {
-          type: "geojson",
-          data: buildOrgsPointsGeoJson(),
-        });
-
-        map.addLayer({
-          id: "orgs-halo",
-          type: "circle",
-          source: "orgs-points",
-          paint: {
-            "circle-radius": 13,
-            "circle-color": ["get", "color"],
-            "circle-opacity": 0.25,
-          },
-        });
-
-        map.addLayer({
-          id: "orgs-circles",
-          type: "circle",
-          source: "orgs-points",
-          paint: {
-            "circle-radius": 7.5,
-            "circle-color": ["get", "color"],
-            "circle-stroke-width": 2.2,
-            "circle-stroke-color": "#FFFFFF",
-          },
-        });
-
-        map.on("mouseenter", "orgs-circles", (e) => {
-          if (!map || !e.features?.[0]) return;
-          map.getCanvas().style.cursor = "pointer";
-          const props = e.features[0].properties;
-          const geom = e.features[0].geometry as GeoJSON.Point;
-          hoverPopup
-            .setLngLat(geom.coordinates as [number, number])
-            .setHTML(
-              `<div style="font-family:system-ui,sans-serif;color:#143326;padding:2px 4px;">
-                <strong style="font-size:12px;">${props.sigla}</strong><br/>
-                <span style="font-size:11px;color:#5F5954;">${props.municipio}, ${props.departamento}</span>
-              </div>`
-            )
-            .addTo(map);
-        });
-
-        map.on("mouseleave", "orgs-circles", () => {
-          if (!map) return;
-          map.getCanvas().style.cursor = "";
-          hoverPopup.remove();
-        });
-
-        map.on("click", "orgs-circles", (e) => {
-          const id = e.features?.[0]?.properties?.id;
-          const found = ORGANIZATIONS.find((o) => o.id === id);
-          if (found) {
-            setSelectedOrg(found);
-            map?.flyTo({
-              center: [found.lng, found.lat],
-              zoom: 8.6,
-              duration: 1100,
-              essential: true,
-            });
-          }
-        });
+      map.on("click", "orgs-circles", (e) => {
+        const id = e.features?.[0]?.properties?.id;
+        const found = ORGANIZATIONS.find((o) => o.id === id);
+        if (found) {
+          setSelectedOrg(found);
+          map?.flyTo({
+            center: [found.lng, found.lat],
+            zoom: 8.6,
+            duration: 1100,
+            essential: true,
+          });
+        }
       });
 
       mapRef.current = map;
-      const t = setTimeout(() => map?.resize(), 350);
+      const t = setTimeout(() => map?.resize(), 300);
       return () => {
         clearTimeout(t);
         hoverPopup.remove();
@@ -340,13 +336,13 @@ export default function MapaTerritorialPage() {
           <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl border border-white/15 bg-night/90 px-3.5 py-2.5 text-[11px] text-cream backdrop-blur-md">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#D49B4B]" /> Sello Diferenciado
+                <span className="h-2.5 w-2.5 rounded-full bg-[#E2A647]" /> Sello Diferenciado
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#2D7A56]" /> Legalidad Vigente
+                <span className="h-2.5 w-2.5 rounded-full bg-[#2CA56D]" /> Legalidad Vigente
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#D96B48]" /> Aval Comunitario
+                <span className="h-2.5 w-2.5 rounded-full bg-[#E06A43]" /> Aval Comunitario
               </span>
             </div>
           </div>
