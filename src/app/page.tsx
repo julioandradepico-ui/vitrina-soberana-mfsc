@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -21,9 +20,12 @@ import {
   ProductItem,
   REGIONAL_HUBS,
 } from "@/data/mfscData";
+import { assetUrl } from "@/lib/paths";
+import { scenarioForHub } from "@/lib/scenarios";
 import { useMarketplace } from "@/context/MarketplaceContext";
 import { ProductQuickDrawer } from "@/components/ProductQuickDrawer";
 import { QrShareModal } from "@/components/QrShareModal";
+import { FallingLeaves } from "@/components/FallingLeaves";
 
 const CATEGORIES: ("Todo" | ProductCategory)[] = [
   "Todo",
@@ -64,35 +66,55 @@ export default function VitrinaHomePage() {
     });
   }, [allProducts, query, category, hubId, seal]);
 
+  const activeScenario = scenarioForHub(hubId);
+  const activeHubName =
+    hubId === "ALL"
+      ? "Bosques Vivos de Colombia · 16 Departamentos"
+      : REGIONAL_HUBS.find((h) => h.id === hubId)?.name || "Ecosistema Regional";
+
   return (
     <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-8">
-      {/* Editorial Compact Hero — Zero Academic Wall */}
-      <section className="relative overflow-hidden rounded-3xl bg-forest px-6 py-8 text-cream shadow-lg sm:px-10 sm:py-10">
-        <div className="grid items-center gap-8 lg:grid-cols-12">
+      {/* Immersive Atmospheric Hero with Dynamic Ecosystem Backdrop + Falling Leaves ONLY in Hero */}
+      <section className="relative overflow-hidden rounded-3xl bg-forest px-6 py-10 text-cream shadow-xl sm:px-10 sm:py-12">
+        {/* Background Ecosystem Photograph with Atmospheric Depth Vignette */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center transition-all duration-700"
+          style={{ backgroundImage: `url('${activeScenario}')` }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-gradient-to-r from-[#0D231A]/92 via-[#143326]/78 to-[#143326]/52"
+        />
+
+        {/* Subtle Colombian Botanical Leaves (Hero-only, sides + gentle drift toward center) */}
+        <FallingLeaves />
+
+        <div className="relative z-10 grid items-center gap-8 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/15 px-3 py-1 text-xs font-semibold text-amber-100">
-              <Sparkles className="h-3.5 w-3.5" />
-              Mesa Nacional de Forestería Comunitaria · 16 Departamentos
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-200/40 bg-forest/70 px-3.5 py-1 text-xs font-semibold text-amber-100 backdrop-blur-md">
+              <Sparkles className="h-3.5 w-3.5 text-amber-300" />
+              {activeHubName}
             </span>
-            <h1 className="mt-3 font-serif text-3xl font-bold leading-tight text-white sm:text-4xl lg:text-[2.65rem]">
+            <h1 className="mt-3.5 font-serif text-3xl font-bold leading-tight text-white drop-shadow-xs sm:text-4xl lg:text-[2.75rem]">
               Bienes y servicios directos del bosque comunitario
             </h1>
-            <p className="mt-3 max-w-xl text-sm leading-relaxed text-cream/85 sm:text-base">
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-cream/95 sm:text-base">
               Conecta sin intermediarios con más de 30 asociaciones forestales,
               agroforestales y artesanales de Colombia. Cotiza por WhatsApp,
               consolida fletes por Hub o suma tu organización en 2 minutos.
             </p>
-            <div className="mt-5 flex flex-wrap gap-2.5">
+            <div className="mt-6 flex flex-wrap gap-2.5">
               <Link
                 href="/mapa"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-terracotta px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-terracotta-dark"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-terracotta px-5 py-2.5 text-sm font-bold text-white shadow-md transition hover:bg-terracotta-dark"
               >
                 <MapPin className="h-4 w-4" />
-                Explorar Mapa de Colombia
+                Explorar Mapa Satelital
               </Link>
               <Link
                 href="/sumar"
-                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-white/25 bg-white/10 px-4 py-2.5 text-sm font-bold text-white backdrop-blur-xs transition hover:bg-white/20"
+                className="inline-flex min-h-[44px] items-center gap-2 rounded-xl border border-white/30 bg-forest/65 px-5 py-2.5 text-sm font-bold text-white backdrop-blur-md transition hover:bg-forest/85"
               >
                 <Plus className="h-4 w-4" />
                 Sumar mi Organización
@@ -105,11 +127,11 @@ export default function VitrinaHomePage() {
               { src: "/images/productos/asomasuc_madera.jpg", alt: "Madera legal certificada" },
               { src: "/images/productos/coomagua_frutos.jpg", alt: "Frutos amazónicos" },
               { src: "/images/productos/forestar_meliponicultura.jpg", alt: "Meliponicultura" },
-              { src: "/images/productos/prod_cesteria_indigena.jpg", alt: "Cestería artesanal" },
+              { src: "/images/productos/prod_cesteria_indigena.jpg", alt: "Cestería artesanal en paja tetera" },
             ].map((img) => (
               <div
                 key={img.src}
-                className="aspect-[4/3] overflow-hidden rounded-2xl border border-white/15 bg-forest-mid"
+                className="aspect-[4/3] overflow-hidden rounded-2xl border border-white/25 bg-forest-mid shadow-lg"
               >
                 <img
                   src={assetUrl(img.src)}
@@ -125,7 +147,7 @@ export default function VitrinaHomePage() {
       {/* Search & Tactile Filter Bar */}
       <section
         aria-label="Filtros de catálogo"
-        className="mt-6 rounded-2xl border border-line bg-white p-4 shadow-xs"
+        className="mt-6 rounded-2xl border border-line bg-white/95 p-4 shadow-xs backdrop-blur-xs"
       >
         <div className="grid gap-3 md:grid-cols-12">
           <div className="relative md:col-span-6">
@@ -347,23 +369,32 @@ export default function VitrinaHomePage() {
         })}
       </section>
 
-      {/* Open Onboarding Invitation */}
-      <section className="mt-10 rounded-3xl border-2 border-dashed border-moss/35 bg-cream p-8 text-center">
-        <h2 className="font-serif text-2xl font-bold text-forest">
-          ¿Tu asociación o emprendimiento forestal aún no está en la Vitrina?
-        </h2>
-        <p className="mx-auto mt-2 max-w-xl text-sm text-muted">
-          Cualquier miembro de la Mesa Nacional o iniciativa comunitaria puede
-          sumar sus bienes y servicios en 2 minutos desde el celular, obtener su
-          propio enlace para WhatsApp y un código QR descargable.
-        </p>
-        <Link
-          href="/sumar"
-          className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-terracotta px-6 py-3 text-sm font-bold text-white shadow-xs transition hover:bg-terracotta-dark"
-        >
-          <Plus className="h-4 w-4" />
-          Sumar mi Organización ahora
-        </Link>
+      {/* Atmospheric Open Onboarding Banner */}
+      <section className="relative mt-10 overflow-hidden rounded-3xl bg-forest p-8 text-center text-cream shadow-lg">
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 bg-cover bg-center opacity-35"
+          style={{
+            backgroundImage: `url('${assetUrl("/images/escenarios/escenario_andino.jpg")}')`,
+          }}
+        />
+        <div className="relative z-10">
+          <h2 className="font-serif text-2xl font-bold text-white">
+            ¿Tu asociación o emprendimiento forestal aún no está en la Vitrina?
+          </h2>
+          <p className="mx-auto mt-2 max-w-xl text-sm text-cream/90">
+            Cualquier miembro de la Mesa Nacional o iniciativa comunitaria puede
+            sumar sus bienes y servicios en 2 minutos desde el celular, obtener su
+            propio enlace para WhatsApp y un código QR descargable.
+          </p>
+          <Link
+            href="/sumar"
+            className="mt-5 inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-terracotta px-6 py-3 text-sm font-bold text-white shadow-md transition hover:bg-terracotta-dark"
+          >
+            <Plus className="h-4 w-4" />
+            Sumar mi Organización ahora
+          </Link>
+        </div>
       </section>
 
       <ProductQuickDrawer

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { assetUrl } from "@/lib/paths";
+import { scenarioForHub } from "@/lib/scenarios";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -37,8 +38,23 @@ export function OrgProfileClient({
         <ArrowLeft className="h-4 w-4" /> Volver a toda la Vitrina
       </Link>
 
+      {/* Atmospheric Ecosystem Strip */}
+      <div
+        className="relative mt-4 h-36 overflow-hidden rounded-3xl bg-forest shadow-md"
+        aria-hidden="true"
+      >
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${scenarioForHub(org.hubId)}')` }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-forest/90 via-forest/40 to-transparent" />
+        <div className="absolute bottom-3 left-6 text-xs font-bold uppercase tracking-wider text-amber-200">
+          Ecosistema · {org.hubName} · {org.macroregion}
+        </div>
+      </div>
+
       {/* Sovereign Micro-Site Banner */}
-      <section className="mt-4 overflow-hidden rounded-3xl border border-line bg-white shadow-sm">
+      <section className="relative z-10 -mt-5 overflow-hidden rounded-3xl border border-line bg-white shadow-md">
         <div className="grid md:grid-cols-12">
           <div className="relative h-64 md:col-span-5 md:h-auto">
             <img

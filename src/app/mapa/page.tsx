@@ -1,18 +1,48 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import * as maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Compass, ExternalLink, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
+import {
+  Compass,
+  ExternalLink,
+  Layers,
+  MapPin,
+  MessageCircle,
+  ShieldCheck,
+} from "lucide-react";
 import { ORGANIZATIONS, Organization, PRODUCTS, REGIONAL_HUBS } from "@/data/mfscData";
+import { assetUrl } from "@/lib/paths";
+
+function buildHubArcsGeoJson() {
+  const hubById = Object.fromEntries(REGIONAL_HUBS.map((h) => [h.id, h]));
+  return {
+    type: "FeatureCollection" as const,
+    features: ORGANIZATIONS.map((org) => {
+      const hub = hubById[org.hubId];
+      return {
+        type: "Feature" as const,
+        properties: { hubId: org.hubId, sigla: org.sigla },
+        geometry: {
+          type: "LineString" as const,
+          coordinates: [
+            [org.lng, org.lat],
+            [hub.center[1], hub.center[0]],
+          ],
+        },
+      };
+    }),
+  };
+}
 
 export default function MapaTerritorialPage() {
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<maplibregl.Map | null>(null);
   const [selectedHubId, setSelectedHubId] = useState<string>("ALL");
   const [selectedOrg, setSelectedOrg] = useState<Organization | null>(null);
+  const [mapMode, setMapMode] = useState<"satellite" | "editorial">("satellite");
+  const [mapError, setMapError] = useState<string | null>(null);
 
   const visibleOrgs = useMemo(() => {
     if (selectedHubId === "ALL") return ORGANIZATIONS;
@@ -20,72 +50,111 @@ export default function MapaTerritorialPage() {
   }, [selectedHubId]);
 
   useEffect(() => {
-    if (!mapContainerRef.current || mapRef.current) return;
+    if (!mapContainerRef.current) return;
 
-    const map = new maplibregl.Map({
-      container: mapContainerRef.current,
-      style: {
-        version: 8,
-        sources: {
-          cartoDark: {
-            type: "raster",
-            tiles: [
+    let map: maplibregl.Map | null = null;
+    try {
+      const tiles =
+        mapMode === "satellite"
+          ? [
+              "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            ]
+          : [
               "https://a.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
               "https://b.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png",
-            ],
-            tileSize: 256,
-            attribution: "&copy; OpenStreetMap &copy; CARTO",
+            ];
+
+      map = new maplibregl.Map({
+        container: mapContainerRef.current,
+        style: {
+          version: 8,
+          sources: {
+            baseTiles: {
+              type: "raster",
+              tiles,
+              tileSize: 256,
+              attribution:
+                mapMode === "satellite"
+                  ? "Imagery &copy; Esri, Maxar, Earthstar Geographics"
+                  : "&copy; OpenStreetMap &copy; CARTO",
+            },
           },
+          layers: [
+            {
+              id: "base-layer",
+              type: "raster",
+              source: "baseTiles",
+            },
+          ],
         },
-        layers: [
-          {
-            id: "carto-layer",
-            type: "raster",
-            source: "cartoDark",
+        center: [-74.1, 4.6],
+        zoom: 5.1,
+      });
+
+      map.addControl(new maplibregl.NavigationControl(), "top-right");
+
+      map.on("load", () => {
+        if (!map) return;
+        map.resize();
+        map.addSource("hub-arcs", {
+          type: "geojson",
+          data: buildHubArcsGeoJson(),
+        });
+        map.addLayer({
+          id: "hub-arcs-layer",
+          type: "line",
+          source: "hub-arcs",
+          paint: {
+            "line-color": mapMode === "satellite" ? "#F4D5B5" : "#C65D3E",
+            "line-width": 2,
+            "line-opacity": 0.72,
+            "line-dasharray": [3, 2],
           },
-        ],
-      },
-      center: [-74.1, 4.6],
-      zoom: 5.1,
-    });
-
-    map.addControl(new maplibregl.NavigationControl(), "top-right");
-
-    ORGANIZATIONS.forEach((org) => {
-      const el = document.createElement("button");
-      el.type = "button";
-      el.className =
-        "flex h-7 w-7 items-center justify-center rounded-full border-2 border-white shadow-md transition-transform hover:scale-125 cursor-pointer";
-      el.style.backgroundColor =
-        org.seal === "Sello Diferenciado"
-          ? "#B9833C"
-          : org.seal === "Legalidad Vigente"
-            ? "#143326"
-            : "#C65D3E";
-      el.title = `${org.sigla} (${org.municipio}, ${org.departamento})`;
-      el.innerHTML = `<span style="width:8px;height:8px;border-radius:999px;background:#fff;display:block"></span>`;
-
-      el.addEventListener("click", () => {
-        setSelectedOrg(org);
-        map.flyTo({
-          center: [org.lng, org.lat],
-          zoom: 8.2,
-          duration: 1200,
-          essential: true,
         });
       });
 
-      new maplibregl.Marker({ element: el })
-        .setLngLat([org.lng, org.lat])
-        .addTo(map);
-    });
+      ORGANIZATIONS.forEach((org) => {
+        const el = document.createElement("button");
+        el.type = "button";
+        el.className =
+          "flex h-7 w-7 items-center justify-center rounded-full border-2 border-white shadow-lg transition-transform hover:scale-125 cursor-pointer";
+        el.style.backgroundColor =
+          org.seal === "Sello Diferenciado"
+            ? "#B9833C"
+            : org.seal === "Legalidad Vigente"
+              ? "#1B4332"
+              : "#C65D3E";
+        el.title = `${org.sigla} (${org.municipio}, ${org.departamento})`;
+        el.innerHTML = `<span style="width:8px;height:8px;border-radius:999px;background:#fff;display:block"></span>`;
 
-    mapRef.current = map;
-    return () => {
-      map.remove();
-      mapRef.current = null;
-    };
-  }, []);
+        el.addEventListener("click", () => {
+          setSelectedOrg(org);
+          map?.flyTo({
+            center: [org.lng, org.lat],
+            zoom: 8.6,
+            duration: 1200,
+            essential: true,
+          });
+        });
+
+        new maplibregl.Marker({ element: el })
+          .setLngLat([org.lng, org.lat])
+          .addTo(map!);
+      });
+
+      mapRef.current = map;
+      const t = setTimeout(() => map?.resize(), 350);
+      return () => {
+        clearTimeout(t);
+        map?.remove();
+        mapRef.current = null;
+      };
+    } catch {
+      setMapError(
+        "No se pudo inicializar WebGL en este navegador. Puedes explorar todas las organizaciones y sus 6 Hubs desde el panel lateral."
+      );
+    }
+  }, [mapMode]);
 
   const flyToHub = (hubId: string) => {
     setSelectedHubId(hubId);
@@ -110,7 +179,7 @@ export default function MapaTerritorialPage() {
     setSelectedOrg(org);
     mapRef.current?.flyTo({
       center: [org.lng, org.lat],
-      zoom: 8.5,
+      zoom: 8.8,
       duration: 1100,
     });
   };
@@ -123,44 +192,63 @@ export default function MapaTerritorialPage() {
     <div className="min-h-[calc(100vh-64px)] bg-night text-cream">
       {/* Hub Selector Ribbon */}
       <div className="border-b border-white/10 bg-night-card px-4 py-3">
-        <div className="mx-auto flex max-w-7xl items-center gap-2 overflow-x-auto no-scrollbar">
-          <span className="inline-flex shrink-0 items-center gap-1.5 pr-2 text-xs font-bold uppercase tracking-wider text-amber-200">
-            <Compass className="h-4 w-4" />
-            6 Hubs Regionales:
-          </span>
-          <button
-            type="button"
-            onClick={() => flyToHub("ALL")}
-            className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-              selectedHubId === "ALL"
-                ? "bg-terracotta text-white"
-                : "border border-white/15 bg-white/5 text-cream/85 hover:bg-white/15"
-            }`}
-          >
-            Toda Colombia (30)
-          </button>
-          {REGIONAL_HUBS.map((h) => (
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-3">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+            <span className="inline-flex shrink-0 items-center gap-1.5 pr-2 text-xs font-bold uppercase tracking-wider text-amber-200">
+              <Compass className="h-4 w-4" />
+              6 Hubs:
+            </span>
             <button
-              key={h.id}
               type="button"
-              onClick={() => flyToHub(h.id)}
+              onClick={() => flyToHub("ALL")}
               className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
-                selectedHubId === h.id
+                selectedHubId === "ALL"
                   ? "bg-terracotta text-white"
                   : "border border-white/15 bg-white/5 text-cream/85 hover:bg-white/15"
               }`}
             >
-              {h.name}
+              Toda Colombia (30)
             </button>
-          ))}
+            {REGIONAL_HUBS.map((h) => (
+              <button
+                key={h.id}
+                type="button"
+                onClick={() => flyToHub(h.id)}
+                className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-bold transition ${
+                  selectedHubId === h.id
+                    ? "bg-terracotta text-white"
+                    : "border border-white/15 bg-white/5 text-cream/85 hover:bg-white/15"
+                }`}
+              >
+                {h.name}
+              </button>
+            ))}
+          </div>
+
+          <button
+            type="button"
+            onClick={() =>
+              setMapMode((m) => (m === "satellite" ? "editorial" : "satellite"))
+            }
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white hover:bg-white/20"
+          >
+            <Layers className="h-3.5 w-3.5 text-amber-200" />
+            {mapMode === "satellite" ? "Vista: Satelital Real" : "Vista: Mapa Limpio"}
+          </button>
         </div>
       </div>
 
       {/* Split View: 65% MapLibre GL + 35% Synchronized Territory Sidebar */}
       <div className="mx-auto grid max-w-7xl lg:grid-cols-12">
-        <div className="relative h-[52vh] lg:col-span-8 lg:h-[calc(100vh-124px)]">
-          <div ref={mapContainerRef} className="h-full w-full" />
-          {/* Legend */}
+        <div className="relative h-[54vh] min-h-[380px] w-full bg-night lg:col-span-8 lg:h-[calc(100vh-124px)]">
+          {mapError ? (
+            <div className="flex h-full items-center justify-center p-8 text-center text-sm text-cream/80">
+              {mapError}
+            </div>
+          ) : (
+            <div ref={mapContainerRef} className="h-full w-full" />
+          )}
+
           <div className="pointer-events-none absolute bottom-4 left-4 rounded-xl border border-white/15 bg-night/90 px-3.5 py-2.5 text-[11px] text-cream backdrop-blur-md">
             <div className="flex flex-wrap items-center gap-3">
               <span className="inline-flex items-center gap-1.5">
@@ -191,7 +279,7 @@ export default function MapaTerritorialPage() {
                 <img
                   src={assetUrl(selectedOrg.heroImage)}
                   alt={selectedOrg.sigla}
-                  className="h-40 w-full object-cover"
+                  className="h-44 w-full object-cover"
                 />
               </div>
 
@@ -222,7 +310,7 @@ export default function MapaTerritorialPage() {
                 </Link>
                 {selectedOrg.wa && (
                   <a
-                    href={`https://wa.me/57${selectedOrg.wa}?text=${encodeURIComponent(`Hola ${selectedOrg.sigla}, los ubiqué en el Mapa de la Vitrina Soberana MFSC.`)}`}
+                    href={`https://wa.me/57${selectedOrg.wa}?text=${encodeURIComponent(`Hola ${selectedOrg.sigla}, los ubiqué en el Mapa Satelital de la Vitrina Soberana MFSC.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 rounded-xl bg-moss px-3 py-2.5 text-xs font-bold text-white hover:bg-forest"

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { assetUrl } from "@/lib/paths";
+import { photoOriginLabel } from "@/lib/scenarios";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -62,6 +63,9 @@ export function ProductQuickDrawer({ product, org, onClose, onOpenQr }: Props) {
               </button>
               <span className="absolute bottom-3 left-4 rounded-full bg-forest/90 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
                 {product.category}
+              </span>
+              <span className="absolute bottom-3 right-4 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-semibold text-white/95 backdrop-blur-sm">
+                {photoOriginLabel(product.image).label}
               </span>
             </div>
 
