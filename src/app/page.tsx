@@ -187,7 +187,7 @@ export default function VitrinaHomePage() {
               <option value="ALL">Todos los sellos</option>
               <option value="Sello Diferenciado">Sello Diferenciado (FSC / Oro)</option>
               <option value="Legalidad Vigente">Legalidad Vigente (CAR / INVIMA)</option>
-              <option value="Aval Comunitario MFSC">Aval Comunitario MFSC</option>
+              <option value="Aval Comunitario">Aval Comunitario</option>
             </select>
           </div>
         </div>

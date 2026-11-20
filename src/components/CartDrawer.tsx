@@ -25,7 +25,7 @@ export function CartDrawer() {
     const lines = entries
       .map((e) => `• ${e.product.title} (Cantidad: ${e.quantity})`)
       .join("\n");
-    return `Hola ${org}, les escribo desde la Vitrina Soberana MFSC para cotizar:\n${lines}\nDestino: ${city || "Por definir"}${notes ? `\nNotas: ${notes}` : ""}`;
+    return `Hola ${org}, les escribo desde la Vitrina de Forestería Comunitaria para cotizar:\n${lines}\nDestino: ${city || "Por definir"}${notes ? `\nNotas: ${notes}` : ""}`;
   };
 
   return (
@@ -178,7 +178,7 @@ export function CartDrawer() {
                           ) : null}
                           {first.email ? (
                             <a
-                              href={`mailto:${first.email}?subject=${encodeURIComponent(`Cotización Vitrina MFSC - ${first.orgSigla}`)}&body=${encodeURIComponent(msg)}`}
+                              href={`mailto:${first.email}?subject=${encodeURIComponent(`Cotización Vitrina de Forestería Comunitaria - ${first.orgSigla}`)}&body=${encodeURIComponent(msg)}`}
                               className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-forest px-3 py-2 text-xs font-bold text-forest hover:bg-sand"
                             >
                               <Mail className="h-4 w-4" />
@@ -191,7 +191,7 @@ export function CartDrawer() {
                               onClick={() => navigator.clipboard?.writeText(msg)}
                               className="w-full rounded-xl bg-terracotta px-3 py-2 text-xs font-bold text-white hover:bg-terracotta-dark"
                             >
-                              Copiar solicitud para Mesa MFSC
+                              Copiar solicitud para Mesa de Forestería Comunitaria
                             </button>
                           )}
                         </div>

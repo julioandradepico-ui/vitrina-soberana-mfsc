@@ -73,11 +73,11 @@ export default function SumarNegocioPage() {
       title: title.trim() || "Producto Forestal Sostenible",
       description:
         description.trim() ||
-        "Oferta registrada directamente por la asociación para la Vitrina Soberana MFSC.",
+        "Oferta registrada directamente por la asociación para la Vitrina de Forestería Comunitaria.",
       image: photoData,
       priceLabel: priceLabel.trim() || "Bajo cotización",
       unitLabel: unitLabel.trim() || "A convenir",
-      certLabel: "En verificación Mesa MFSC",
+      certLabel: "En verificación Mesa de Forestería",
       seal: "Nuevo · Pendiente aval",
       availability: "Recién registrado",
       web: web.trim(),
@@ -104,7 +104,7 @@ export default function SumarNegocioPage() {
   };
 
   if (submittedItem) {
-    const waText = `Nueva postulación Vitrina Soberana MFSC:%0A• Asociación: ${submittedItem.orgSigla}%0A• Ubicación: ${submittedItem.municipio}, ${submittedItem.departamento} (${submittedItem.hubName})%0A• Producto: ${submittedItem.title} (${submittedItem.category})%0A• Precio: ${submittedItem.priceLabel}%0A• WhatsApp: ${submittedItem.wa}`;
+    const waText = `Nueva postulación Vitrina de Forestería Comunitaria:%0A• Asociación: ${submittedItem.orgSigla}%0A• Ubicación: ${submittedItem.municipio}, ${submittedItem.departamento} (${submittedItem.hubName})%0A• Producto: ${submittedItem.title} (${submittedItem.category})%0A• Precio: ${submittedItem.priceLabel}%0A• WhatsApp: ${submittedItem.wa}`;
     return (
       <main className="mx-auto max-w-2xl px-4 py-10">
         <div className="rounded-3xl border border-line bg-white p-8 text-center shadow-sm">
@@ -113,7 +113,7 @@ export default function SumarNegocioPage() {
             ¡Tu producto ya está en vista previa!
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Ya puedes ver la tarjeta de <strong>{submittedItem.orgSigla}</strong> al principio de la Vitrina. Envía ahora esta ficha a la Secretaría Técnica de la Mesa MFSC para su publicación oficial para todo el país.
+            Ya puedes ver la tarjeta de <strong>{submittedItem.orgSigla}</strong> al principio de la Vitrina. Envía ahora esta ficha a la Secretaría Técnica de la Mesa de Forestería Comunitaria para su publicación oficial para todo el país.
           </p>
 
           <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -153,7 +153,7 @@ export default function SumarNegocioPage() {
           Ingreso Abierto · Cero Fricción · 2 Minutos desde el Celular
         </span>
         <h1 className="mt-1 font-serif text-3xl font-bold text-forest">
-          Suma tu organización o producto a la Vitrina MFSC
+          Suma tu organización o producto a la Vitrina de Forestería Comunitaria
         </h1>
         <p className="mt-1 text-sm text-muted">
           Previsualiza en tiempo real cómo verán los compradores tu tarjeta antes de enviarla a la Mesa Nacional.

@@ -394,7 +394,7 @@ export default function MapaTerritorialPage() {
                 </Link>
                 {selectedOrg.wa && (
                   <a
-                    href={`https://wa.me/57${selectedOrg.wa}?text=${encodeURIComponent(`Hola ${selectedOrg.sigla}, los ubiqué en el Mapa Satelital de la Vitrina Soberana MFSC.`)}`}
+                    href={`https://wa.me/57${selectedOrg.wa}?text=${encodeURIComponent(`Hola ${selectedOrg.sigla}, los ubiqué en el Mapa Satelital de la Vitrina de Forestería Comunitaria.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center justify-center gap-1.5 rounded-xl bg-moss px-3 py-2.5 text-xs font-bold text-white hover:bg-forest"

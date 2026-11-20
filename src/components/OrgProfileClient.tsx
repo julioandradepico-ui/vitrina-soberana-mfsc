@@ -134,7 +134,7 @@ export function OrgProfileClient({
 
               {org.wa && (
                 <a
-                  href={`https://wa.me/57${org.wa}?text=${encodeURIComponent(`Hola ${org.sigla}, los contacto desde su micro-sitio en la Vitrina Soberana MFSC.`)}`}
+                  href={`https://wa.me/57${org.wa}?text=${encodeURIComponent(`Hola ${org.sigla}, los contacto desde su micro-sitio en la Vitrina de Forestería Comunitaria.`)}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex min-h-[44px] items-center gap-2 rounded-xl bg-moss px-4 py-2.5 text-sm font-bold text-white hover:bg-forest"
@@ -171,7 +171,7 @@ export function OrgProfileClient({
               Catálogo en levantamiento territorial
             </p>
             <p className="mt-1 text-sm text-muted">
-              Esta organización hace parte de la XII Mesa Nacional MFSC y puede subir sus productos y fotos en 2 minutos.
+              Esta organización hace parte de la XII Mesa Nacional de Manejo Forestal Sostenible Comunitario y puede subir sus productos y fotos en 2 minutos.
             </p>
             <Link
               href="/sumar"

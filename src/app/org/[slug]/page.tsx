@@ -14,12 +14,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const org = ORGANIZATIONS.find((o) => o.slug === slug);
-  if (!org) return { title: "Organización no encontrada · Vitrina MFSC" };
+  if (!org) return { title: "Organización no encontrada · Vitrina de Forestería Comunitaria" };
   return {
-    title: `${org.sigla} (${org.municipio}, ${org.departamento}) · Vitrina Soberana MFSC`,
+    title: `${org.sigla} (${org.municipio}, ${org.departamento}) · Vitrina de Forestería Comunitaria`,
     description: `${org.razonSocial}. ${org.certificaciones}. Conecta directamente con esta asociación forestal comunitaria.`,
     openGraph: {
-      title: `${org.sigla} · Vitrina Soberana MFSC`,
+      title: `${org.sigla} · Vitrina de Forestería Comunitaria`,
       description: `${org.razonSocial} en ${org.municipio}, ${org.departamento}.`,
       images: [org.heroImage],
     },

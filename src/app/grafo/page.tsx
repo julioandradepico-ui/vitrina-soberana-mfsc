@@ -24,7 +24,7 @@ export default function GrafoSoberaniaPage() {
 
   const nodeMap = Object.fromEntries(MFSC_GRAPH_NODES.map((n) => [n.id, n]));
 
-  const embedCode = `<iframe src="https://julioandradepico-ui.github.io/vitrina-soberana-mfsc/embed/${embedRegion}/" title="Vitrina Soberana MFSC (${embedRegion})" width="100%" height="760" style="border:1px solid #E4DED2;border-radius:16px;" loading="lazy"></iframe>`;
+  const embedCode = `<iframe src="https://julioandradepico-ui.github.io/vitrina-soberana-mfsc/embed/${embedRegion}/" title="Vitrina de Forestería Comunitaria (${embedRegion})" width="100%" height="760" style="border:1px solid #E4DED2;border-radius:16px;" loading="lazy"></iframe>`;
 
   const copyEmbed = async () => {
     await navigator.clipboard?.writeText(embedCode);
@@ -49,16 +49,16 @@ export default function GrafoSoberaniaPage() {
         />
         <div className="relative z-10 max-w-3xl">
           <span className="text-xs font-bold uppercase tracking-wider text-amber-200">
-            Capa Estratégica · AICS · Mesa Nacional MFSC
+            Capa Estratégica · AICS · Mesa Nacional de Manejo Forestal Sostenible Comunitario
           </span>
           <h1 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
-            Grafo Interactivo MFSC y Federación Soberana
+            Grafo de Forestería Comunitaria y Articulación
           </h1>
           <p className="mt-2 text-sm leading-relaxed text-cream/90">
             Toca cualquier nodo del Grafo del Taller (147 tarjetas, 7 mesas) para ver
             qué organizaciones reales del Marketplace encarnan esa palanca o brecha, y
             configura el widget federado para integrarse con ExpoBosques (GIZ) sin
-            perder soberanía.
+            perder autonomía.
           </p>
         </div>
       </section>
@@ -69,7 +69,7 @@ export default function GrafoSoberaniaPage() {
           <div className="mb-3 flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-200">
               <Network className="h-4 w-4" />
-              Grafo Causal MFSC conectado al Catálogo
+              Grafo de Forestería Comunitaria conectado al Catálogo
             </span>
             <span className="text-[11px] text-cream/65">Haz clic en cualquier nodo</span>
           </div>
@@ -245,13 +245,13 @@ export default function GrafoSoberaniaPage() {
           <div className="max-w-2xl">
             <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-moss">
               <ShieldCheck className="h-4 w-4" />
-              Autonomía de Gestión y Soberanía Comunitaria
+              Autonomía de Gestión Comunitaria
             </span>
             <h2 className="mt-1 font-serif text-2xl font-bold text-forest">
               Integración Federada con ExpoBosques (GIZ) sin perder el control
             </h2>
             <p className="mt-2 text-sm text-muted">
-              Como <code>expobosquescol.com</code> prioriza la Amazonía y es administrada por GIZ/ProBosques, la Mesa Nacional mantiene su repositorio soberano y ofrece un <strong>widget embebible</strong> por región. Así se suma el tráfico de ExpoBosques sin subordinar los datos ni la gobernanza.
+              Como <code>expobosquescol.com</code> prioriza la Amazonía y es administrada por GIZ/ProBosques, la Mesa Nacional mantiene su repositorio propio y ofrece un <strong>widget embebible</strong> por región. Así se suma el tráfico de ExpoBosques sin subordinar los datos ni la gobernanza.
             </p>
           </div>
           <div className="flex items-center gap-2">

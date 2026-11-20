@@ -152,7 +152,7 @@ export function QrShareModal({ org, onClose }: Props) {
 
           <div className="mt-4 grid w-full grid-cols-2 gap-2.5">
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(`Conoce nuestros bienes y servicios sostenibles de ${org.sigla} en la Vitrina de la Mesa Nacional MFSC: ${shareUrl}`)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(`Conoce nuestros bienes y servicios sostenibles de ${org.sigla} en la Vitrina de la Mesa Nacional de Manejo Forestal Sostenible Comunitario: ${shareUrl}`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-1.5 rounded-xl bg-moss px-3 py-2.5 text-xs font-bold text-white hover:bg-forest"

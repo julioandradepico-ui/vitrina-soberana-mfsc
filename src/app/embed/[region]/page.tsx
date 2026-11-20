@@ -35,7 +35,7 @@ export default async function EmbedRegionPage({
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-forest px-4 py-3 text-cream">
         <div>
           <span className="text-[11px] font-bold uppercase tracking-wider text-amber-200">
-            Widget Federado Soberano · Mesa Nacional MFSC
+            Widget Federado · Mesa Nacional de Forestería Comunitaria
           </span>
           <h1 className="font-serif text-lg font-bold text-white">
             Vitrina {r === "nacional" ? "Nacional (16 Departamentos)" : r.toUpperCase()} ({filtered.length} ofertas)
@@ -73,7 +73,7 @@ export default async function EmbedRegionPage({
               <div className="mt-auto flex gap-2 pt-3">
                 {p.wa && (
                   <a
-                    href={`https://wa.me/57${p.wa}?text=${encodeURIComponent(`Hola ${p.orgSigla}, los contacto desde el widget federado de la Vitrina MFSC por: ${p.title}`)}`}
+                    href={`https://wa.me/57${p.wa}?text=${encodeURIComponent(`Hola ${p.orgSigla}, los contacto desde el widget federado de la Vitrina de Forestería Comunitaria por: ${p.title}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex flex-1 items-center justify-center gap-1 rounded-lg bg-moss px-2.5 py-1.5 text-xs font-bold text-white hover:bg-forest"

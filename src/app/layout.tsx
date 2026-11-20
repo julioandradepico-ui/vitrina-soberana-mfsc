@@ -18,11 +18,11 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Vitrina Soberana MFSC — Bosques Comunitarios de Colombia",
+  title: "Vitrina de Forestería Comunitaria — Bosques Comunitarios de Colombia",
   description:
     "Repositorio comercial soberano de la Mesa Nacional de Manejo Forestal Sostenible Comunitario. Conecta directamente con 30+ asociaciones forestales y agroforestales de 16 departamentos.",
   openGraph: {
-    title: "Vitrina Soberana MFSC — Bosques Comunitarios de Colombia",
+    title: "Vitrina de Forestería Comunitaria — Bosques Comunitarios de Colombia",
     description:
       "Madera legal certificada, frutos amazónicos, aceites, miel de meliponas, artesanías y restauración ecológica directo de las comunidades.",
     type: "website",

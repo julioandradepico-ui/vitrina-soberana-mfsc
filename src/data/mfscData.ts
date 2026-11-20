@@ -1,5 +1,5 @@
 // Archivo generado automáticamente desde 01_BASE_DATOS_MAESTRA_ASOCIACIONES_MFSC.json
-export type TrustSeal = "Sello Diferenciado" | "Legalidad Vigente" | "Aval Comunitario MFSC" | "Nuevo · Pendiente aval";
+export type TrustSeal = "Sello Diferenciado" | "Legalidad Vigente" | "Aval Comunitario" | "Nuevo · Pendiente aval";
 export type ProductCategory = "Maderables" | "PFNM" | "Agroforestales" | "Artesanías" | "Viveros" | "Servicios Ambientales";
 
 export interface RegionalHub {
@@ -1704,7 +1704,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Bajo cotización / Institucional",
     "unitLabel": "Por pieza / Proyecto",
     "certLabel": "MinInterior · ADR",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido directo",
     "web": "https://asocabildosindigenaszenuorico.gov.co",
     "wa": "3126964296",
@@ -1823,7 +1823,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Venta en mercados locales",
     "unitLabel": "kg / Unidad",
     "certLabel": "Cámara de Comercio Pasto",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido directo",
     "web": "",
     "wa": "3155687512",
@@ -1851,7 +1851,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Bajo cotización",
     "unitLabel": "m³ / Acuerdos",
     "certLabel": "CORPOAMAZONIA · GGGI",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido directo",
     "web": "https://amazoniaesenciadevida.com.co",
     "wa": "3223054509",
@@ -1880,7 +1880,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Vía organizaciones vinculadas",
     "unitLabel": "Varios",
     "certLabel": "Gobernanza CORPOAMAZONIA",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido directo",
     "web": "https://www.corpoamazonia.gov.co",
     "wa": "",
@@ -2144,7 +2144,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Bajo cotización directa",
     "unitLabel": "m³ / Pieza",
     "certLabel": "Permiso Aprovechamiento Persistente",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido · Cupo UCA",
     "web": "https://www.instagram.com/asafch.chucuri/",
     "wa": "3177248169",
@@ -2173,7 +2173,7 @@ export const PRODUCTS: ProductItem[] = [
     "priceLabel": "Bajo cotización",
     "unitLabel": "kg / Bulto",
     "certLabel": "WWF · Expobosques",
-    "seal": "Aval Comunitario MFSC",
+    "seal": "Aval Comunitario",
     "availability": "Bajo pedido · Cupo UCA",
     "web": "https://www.instagram.com/asafch.chucuri/",
     "wa": "3177248169",
@@ -2382,7 +2382,7 @@ export const MFSC_GRAPH_NODES: GraphNode[] = [
     "weight": "Articuladores territoriales",
     "mesas": "Putumayo · Sucre · Nacional",
     "category": "habilitador",
-    "desc": "Operan como moderadores locales de la Vitrina Soberana y puentes federados con ExpoBosques sin ceder autonomía.",
+    "desc": "Operan como moderadores locales de la Vitrina de Forestería Comunitaria y puentes federados con ExpoBosques sin ceder autonomía.",
     "x": 540,
     "y": 410
   }

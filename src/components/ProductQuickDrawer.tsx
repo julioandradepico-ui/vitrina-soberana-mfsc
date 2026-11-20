@@ -161,7 +161,7 @@ export function ProductQuickDrawer({ product, org, onClose, onOpenQr }: Props) {
 
                 {product.wa && (
                   <a
-                    href={`https://wa.me/57${product.wa}?text=${encodeURIComponent(`Hola ${product.orgSigla}, me interesa cotizar: ${product.title} desde la Vitrina Soberana MFSC.`)}`}
+                    href={`https://wa.me/57${product.wa}?text=${encodeURIComponent(`Hola ${product.orgSigla}, me interesa cotizar: ${product.title} desde la Vitrina de Forestería Comunitaria.`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl bg-moss px-4 py-2.5 text-sm font-bold text-white hover:bg-forest"

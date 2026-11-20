@@ -8,7 +8,7 @@ import { useMarketplace } from "@/context/MarketplaceContext";
 const NAV_ITEMS = [
   { href: "/", label: "Vitrina", icon: Store },
   { href: "/mapa", label: "Mapa Territorial", icon: MapPin },
-  { href: "/grafo", label: "Grafo y Soberanía", icon: Network },
+  { href: "/grafo", label: "Grafo y Articulación", icon: Network },
 ];
 
 export function Navigation() {
@@ -29,10 +29,10 @@ export function Navigation() {
             </span>
             <div className="leading-tight">
               <span className="block font-serif text-base font-bold text-forest">
-                Vitrina Soberana MFSC
+                Vitrina de Forestería Comunitaria
               </span>
               <span className="hidden text-[11px] font-medium text-muted sm:block">
-                Bosques Comunitarios de Colombia · 16 Departamentos
+                Manejo Forestal Sostenible Comunitario · 16 Departamentos
               </span>
             </div>
           </Link>
