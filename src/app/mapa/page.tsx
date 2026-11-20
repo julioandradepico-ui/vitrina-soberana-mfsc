@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import * as maplibregl from "maplibre-gl";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { Compass, ExternalLink, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
 import { ORGANIZATIONS, Organization, PRODUCTS, REGIONAL_HUBS } from "@/data/mfscData";
 

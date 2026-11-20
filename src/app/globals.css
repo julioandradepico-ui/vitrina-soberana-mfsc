@@ -1,5 +1,4 @@
 @import "tailwindcss";
-@import "maplibre-gl/dist/maplibre-gl.css";
 
 @theme inline {
   --color-sand: #F6F3EC;
@@ -41,7 +40,6 @@ body {
   font-variant-numeric: tabular-nums;
 }
 
-/* Hide scrollbars cleanly for horizontal pill carousels */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
