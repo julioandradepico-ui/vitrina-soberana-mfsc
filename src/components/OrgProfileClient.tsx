@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -41,7 +42,7 @@ export function OrgProfileClient({
         <div className="grid md:grid-cols-12">
           <div className="relative h-64 md:col-span-5 md:h-auto">
             <img
-              src={org.heroImage}
+              src={assetUrl(org.heroImage)}
               alt={org.sigla}
               className="h-full w-full object-cover"
             />
@@ -172,7 +173,7 @@ export function OrgProfileClient({
               >
                 <div className="aspect-[4/3] w-full overflow-hidden bg-sand">
                   <img
-                    src={p.image}
+                    src={assetUrl(p.image)}
                     alt={p.title}
                     className="h-full w-full object-cover"
                   />

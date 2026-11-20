@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -111,7 +112,7 @@ export default function VitrinaHomePage() {
                 className="aspect-[4/3] overflow-hidden rounded-2xl border border-white/15 bg-forest-mid"
               >
                 <img
-                  src={img.src}
+                  src={assetUrl(img.src)}
                   alt={img.alt}
                   className="h-full w-full object-cover transition duration-500 hover:scale-105"
                 />
@@ -233,7 +234,7 @@ export default function VitrinaHomePage() {
                 className="relative aspect-[4/3] w-full overflow-hidden bg-sand text-left"
               >
                 <img
-                  src={item.image}
+                  src={assetUrl(item.image)}
                   alt={`${item.title} - ${item.orgSigla}`}
                   loading="lazy"
                   className="h-full w-full object-cover transition duration-500 group-hover:scale-105"

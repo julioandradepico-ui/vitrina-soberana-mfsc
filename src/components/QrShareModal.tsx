@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import QRCode from "qrcode";
 import { Check, Copy, Download, MessageCircle, X } from "lucide-react";
 import { Organization } from "@/data/mfscData";
+import { BASE_PATH } from "@/lib/paths";
 
 interface Props {
   org: Organization | null;
@@ -16,7 +17,7 @@ export function QrShareModal({ org, onClose }: Props) {
 
   const shareUrl =
     typeof window !== "undefined" && org
-      ? `${window.location.origin}/org/${org.slug}`
+      ? `${window.location.origin}${BASE_PATH}/org/${org.slug}`
       : org
         ? `https://vitrinamfsc.vercel.app/org/${org.slug}`
         : "";

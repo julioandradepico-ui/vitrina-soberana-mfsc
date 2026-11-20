@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import * as maplibregl from "maplibre-gl";
 import { Compass, ExternalLink, MapPin, MessageCircle, ShieldCheck } from "lucide-react";
@@ -187,7 +188,7 @@ export default function MapaTerritorialPage() {
 
               <div className="mt-3 overflow-hidden rounded-2xl border border-white/15">
                 <img
-                  src={selectedOrg.heroImage}
+                  src={assetUrl(selectedOrg.heroImage)}
                   alt={selectedOrg.sigla}
                   className="h-40 w-full object-cover"
                 />
@@ -241,7 +242,7 @@ export default function MapaTerritorialPage() {
                       className="flex items-center gap-3 rounded-xl border border-white/10 bg-night p-2.5"
                     >
                       <img
-                        src={p.image}
+                        src={assetUrl(p.image)}
                         alt={p.title}
                         className="h-12 w-12 rounded-lg object-cover shrink-0"
                       />
@@ -276,7 +277,7 @@ export default function MapaTerritorialPage() {
                     className="flex w-full items-center gap-3 rounded-xl border border-white/10 bg-night/80 p-3 text-left transition hover:border-terracotta/60 hover:bg-night"
                   >
                     <img
-                      src={o.heroImage}
+                      src={assetUrl(o.heroImage)}
                       alt={o.sigla}
                       className="h-11 w-11 rounded-lg object-cover shrink-0"
                     />

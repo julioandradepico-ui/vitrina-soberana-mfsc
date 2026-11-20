@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { assetUrl } from "@/lib/paths";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   CheckCircle2,
@@ -47,7 +48,7 @@ export function ProductQuickDrawer({ product, org, onClose, onOpenQr }: Props) {
           >
             <div className="relative h-64 w-full shrink-0 bg-sand">
               <img
-                src={product.image}
+                src={assetUrl(product.image)}
                 alt={product.title}
                 className="h-full w-full object-cover"
               />

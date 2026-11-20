@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { assetUrl } from "@/lib/paths";
 import Link from "next/link";
 import {
   ArrowLeft,
@@ -407,7 +408,7 @@ export default function SumarNegocioPage() {
             </span>
             <article className="overflow-hidden rounded-2xl border border-line bg-white shadow-md">
               <div className="relative aspect-[4/3] bg-sand">
-                <img src={photoData} alt="Vista previa" className="h-full w-full object-cover" />
+                <img src={assetUrl(photoData)} alt="Vista previa" className="h-full w-full object-cover" />
                 <span className="absolute left-3 top-3 rounded-full bg-forest/90 px-2.5 py-1 text-[11px] font-bold text-white">
                   {category}
                 </span>

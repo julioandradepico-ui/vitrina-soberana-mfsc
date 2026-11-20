@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { assetUrl } from "@/lib/paths";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mail, MessageCircle, ShoppingBag, Trash2, X } from "lucide-react";
 import { useMarketplace } from "@/context/MarketplaceContext";
@@ -132,7 +133,7 @@ export function CartDrawer() {
                           {entries.map((e) => (
                             <div key={e.product.id} className="flex items-start gap-3">
                               <img
-                                src={e.product.image}
+                                src={assetUrl(e.product.image)}
                                 alt={e.product.title}
                                 className="h-14 w-14 rounded-lg object-cover shrink-0 border border-line"
                               />

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { assetUrl } from "@/lib/paths";
 import { ExternalLink, MessageCircle, ShieldCheck } from "lucide-react";
 import { PRODUCTS } from "@/data/mfscData";
 
@@ -56,7 +57,7 @@ export default async function EmbedRegionPage({
             className="flex flex-col overflow-hidden rounded-2xl border border-line bg-white shadow-xs"
           >
             <div className="relative aspect-[4/3] bg-sand">
-              <img src={p.image} alt={p.title} className="h-full w-full object-cover" />
+              <img src={assetUrl(p.image)} alt={p.title} className="h-full w-full object-cover" />
               <span className="absolute right-2.5 top-2.5 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-0.5 text-[10px] font-bold text-forest">
                 <ShieldCheck className="h-3 w-3 text-gold" /> {p.seal}
               </span>
